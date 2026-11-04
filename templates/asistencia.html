@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Asistencia{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Control de asistencia</h1>
+<p class="subtitulo-pagina">La registra el tutor o tutora del aula (Art. 161). Las tardanzas inciden en la evaluación de la conducta.</p>
+
+<form method="GET" class="glass panel mb-4"><div class="row g-3 align-items-end">
+    <div class="col-md-6"><label class="form-label">Aula</label>
+        <select name="aula_id" class="form-select" onchange="this.form.submit()">
+            <option value="">— Selecciona —</option>
+            {% for a in aulas %}<option value="{{ a.id }}" {% if aula and aula.id == a.id %}selected{% endif %}>{{ a.nombre }}</option>{% endfor %}
+        </select></div>
+    <div class="col-md-4"><label class="form-label">Fecha</label>
+        <input type="date" name="fecha" value="{{ fecha_sel }}" max="{{ hoy }}" class="form-control" onchange="this.form.submit()"></div>
+</div>{% if not aulas %}<p class="text-muted small mt-3 mb-0">No eres tutor/a de ningún aula.</p>{% endif %}</form>
+
+{% if aula %}
+<form method="POST"><input type="hidden" name="aula_id" value="{{ aula.id }}"><input type="hidden" name="fecha" value="{{ fecha_sel }}">
+<div class="glass panel mb-3">
+    <div class="d-flex justify-content-between flex-wrap gap-2 mb-3">
+        <h4 class="titulo mb-0">{{ aula.nombre }} · {{ fecha_sel.strftime('%d/%m/%Y') }}</h4>
+        <span class="text-muted small">Ingreso a las {{ aula.grado.hora_ingreso.strftime('%H:%M') }}</span>
+    </div>
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="marcarTodos('presente')">Marcar todos presentes</button>
+    </div>
+    <div class="tabla-wrap"><table class="table">
+        <thead><tr><th>Estudiante</th><th style="width:230px">Estado</th></tr></thead><tbody>
+        {% for m in matriculados %}
+        {% set actual = registradas.get(m.estudiante_id, '') %}
+        <tr><td>{{ m.estudiante.apellido }}, {{ m.estudiante.nombre }}</td>
+            <td><select name="estado_{{ m.id }}" class="form-select form-select-sm sel-asis">
+                <option value="">— Sin registrar —</option>
+                {% for e in estados %}<option value="{{ e.value }}" {% if actual == e.value %}selected{% endif %}>{{ e.value|capitalize }}</option>{% endfor %}
+            </select></td></tr>
+        {% else %}<tr><td colspan="2" class="text-muted text-center py-4">No hay estudiantes matriculados en esta aula.</td></tr>{% endfor %}
+        </tbody></table></div>
+</div>
+{% if matriculados %}<button class="btn btn-success px-4">Guardar asistencia</button>{% endif %}
+</form>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+function marcarTodos(valor) { document.querySelectorAll('.sel-asis').forEach(s => s.value = valor); }
+</script>
+{% endblock %}

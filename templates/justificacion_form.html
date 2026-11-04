@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Justificar{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Justificar {{ asis.estado.value }}</h1>
+<p class="subtitulo-pagina">{{ asis.estudiante.nombre_completo }} · {{ asis.fecha.strftime('%d/%m/%Y') }}</p>
+{% if fuera_de_plazo %}
+<div class="alert alert-danger">Pasaron {{ transcurridos }} días hábiles. El plazo para justificar es de 5 días hábiles (Art. 163). Comunícate con Dirección.</div>
+{% else %}
+<div class="alert alert-info">Quedan {{ 5 - transcurridos if transcurridos <= 5 else 0 }} día(s) hábil(es) para justificar.</div>
+{% endif %}
+<div class="glass panel" style="max-width:640px"><form method="POST">
+    <label class="form-label">Motivo</label>
+    <textarea name="motivo" rows="4" class="form-control mb-3" placeholder="Describe el motivo…" required {% if fuera_de_plazo %}disabled{% endif %}></textarea>
+    <button class="btn btn-success" {% if fuera_de_plazo %}disabled{% endif %}>Enviar justificación</button>
+    <a href="{{ url_for('detalle_estudiante', id=asis.estudiante_id) }}" class="btn btn-outline-secondary">Volver</a>
+</form></div>
+{% endblock %}

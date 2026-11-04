@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Aulas{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Aulas {{ ANIO }}</h1>
+<p class="subtitulo-pagina">Capacidad máxima según el Art. 82 del reglamento</p>
+<div class="glass tabla-wrap"><table class="table table-hover">
+    <thead><tr><th>Aula</th><th>Nivel</th><th>Tutor/a</th><th>Horario</th><th style="min-width:150px">Ocupación</th><th></th></tr></thead>
+    <tbody>
+    {% for a in aulas %}{% set n = ocupacion[a.id] %}
+    <tr>
+        <td><strong>{{ a.nombre }}</strong><div class="small text-muted">Ciclo {{ a.grado.ciclo }} · {{ a.grado.edad_normativa }} años</div></td>
+        <td>{{ a.grado.nivel.value|capitalize }}</td>
+        <td>{{ a.tutor.usuario.nombre if a.tutor else '—' }}</td>
+        <td class="small">{{ a.grado.hora_ingreso.strftime('%H:%M') }} – {{ a.grado.hora_salida.strftime('%H:%M') }}</td>
+        <td><div class="small">{{ n }} / {{ a.capacidad_maxima }}</div>
+            <div class="barra {{ 'llena' if n >= a.capacidad_maxima else '' }}"><span style="width: {{ (n / a.capacidad_maxima * 100)|round|int }}%"></span></div></td>
+        <td class="text-end"><a href="{{ url_for('detalle_aula', id=a.id) }}" class="btn btn-sm btn-info">Abrir</a></td>
+    </tr>
+    {% else %}<tr><td colspan="6" class="text-muted text-center py-4">No tienes aulas asignadas.</td></tr>{% endfor %}
+    </tbody></table></div>
+{% endblock %}

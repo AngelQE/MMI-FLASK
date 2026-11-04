@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Panel docente{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Hola, {{ session.nombre }} 👋</h1>
+<p class="subtitulo-pagina">Tus aulas en {{ ANIO }}</p>
+
+{% if not aulas %}
+<div class="glass panel text-muted">Todavía no tienes aulas asignadas. Dirección debe asignarte como tutor/a o a un área.</div>
+{% endif %}
+<div class="row g-4 mb-4">
+    {% for a in aulas %}
+    <div class="col-md-6 col-lg-4">
+        <div class="glass panel h-100">
+            <span class="estado {{ 'estado-activo' if a.id in tutor_ids else 'estado-justificado' }}">{{ 'Tutor/a' if a.id in tutor_ids else 'Docente de área' }}</span>
+            <h4 class="titulo mt-2">{{ a.nombre }}</h4>
+            <p class="text-muted small mb-3">{{ a.grado.nivel.value|capitalize }} · Ingreso {{ a.grado.hora_ingreso.strftime('%H:%M') }} · Salida {{ a.grado.hora_salida.strftime('%H:%M') }}</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('calificaciones', aula_id=a.id) }}" class="btn btn-sm btn-primary">Calificar</a>
+                {% if a.id in tutor_ids %}
+                <a href="{{ url_for('asistencia', aula_id=a.id) }}" class="btn btn-sm btn-info">Asistencia</a>
+                <a href="{{ url_for('conducta', aula_id=a.id) }}" class="btn btn-sm btn-outline-secondary">Conducta</a>
+                {% endif %}
+                <a href="{{ url_for('detalle_aula', id=a.id) }}" class="btn btn-sm btn-outline-secondary">Ver aula</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="glass panel">
+    <h4 class="titulo mb-3">Comunicados</h4>
+    {% for c in comunicados %}
+    <div class="mb-3"><strong>{{ c.titulo }}</strong> <span class="text-muted small">· {{ c.fecha_publicacion.strftime('%d/%m/%Y') }}</span>
+        <div class="small">{{ c.contenido }}</div></div>
+    {% else %}<p class="text-muted mb-0">Aún no hay comunicados.</p>{% endfor %}
+</div>
+{% endblock %}

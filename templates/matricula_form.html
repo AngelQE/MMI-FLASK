@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Nueva matrícula{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Nueva matrícula</h1>
+<p class="subtitulo-pagina">El sistema valida la edad (Anexo 2) y la capacidad del aula (Art. 82).</p>
+<div class="glass panel" style="max-width:640px"><form method="POST">
+    <label class="form-label">Estudiante</label>
+    <select name="estudiante_id" class="form-select mb-3" required>
+        <option value="">— Selecciona —</option>
+        {% for e in estudiantes %}<option value="{{ e.id }}">{{ e.apellido }}, {{ e.nombre }} · nac. {{ e.fecha_nacimiento.strftime('%d/%m/%Y') }}</option>{% endfor %}
+    </select>
+    <label class="form-label">Aula</label>
+    <select name="aula_id" class="form-select mb-3" required>
+        <option value="">— Selecciona —</option>
+        {% for a in aulas %}<option value="{{ a.id }}">{{ a.nombre }} ({{ a.grado.nivel.value|capitalize }}, {{ a.grado.edad_normativa }} años)</option>{% endfor %}
+    </select>
+    <label class="form-label">Año lectivo</label>
+    <input type="number" name="anio_lectivo" class="form-control mb-3" value="{{ anio_default }}" required>
+    <div class="form-check mb-4"><input class="form-check-input" type="checkbox" name="forzar" id="forzar">
+        <label class="form-check-label" for="forzar">Dirección autoriza una excepción de edad</label></div>
+    <button class="btn btn-success">Matricular</button>
+    <a href="{{ url_for('matriculas') }}" class="btn btn-outline-secondary">Cancelar</a>
+</form></div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}{{ aula.nombre }}{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">{{ aula.nombre }}</h1>
+<p class="subtitulo-pagina">{{ aula.grado.nivel.value|capitalize }} · Ciclo {{ aula.grado.ciclo }} · Edad normativa {{ aula.grado.edad_normativa }} años ·
+    {{ aula.grado.hora_ingreso.strftime('%H:%M') }} a {{ aula.grado.hora_salida.strftime('%H:%M') }}</p>
+
+<div class="row g-4">
+    <div class="col-lg-7"><div class="glass panel">
+        <h4 class="titulo mb-3">Estudiantes matriculados ({{ matriculados|length }}/{{ aula.capacidad_maxima }})</h4>
+        <div class="tabla-wrap"><table class="table table-sm table-hover"><tbody>
+        {% for m in matriculados %}
+        <tr><td>{{ loop.index }}</td><td>{{ m.estudiante.apellido }}, {{ m.estudiante.nombre }}</td>
+            <td class="text-end"><a href="{{ url_for('detalle_estudiante', id=m.estudiante_id) }}" class="btn btn-sm btn-outline-secondary">Ficha</a></td></tr>
+        {% else %}<tr><td class="text-muted">Sin estudiantes matriculados.</td></tr>{% endfor %}
+        </tbody></table></div>
+    </div></div>
+
+    <div class="col-lg-5">
+        <div class="glass panel mb-4">
+            <h4 class="titulo mb-3">Tutor/a y capacidad</h4>
+            {% if session.rol == 'Administrador' %}
+            <form method="POST"><input type="hidden" name="accion" value="tutor">
+                <label class="form-label">Tutor/a del aula</label>
+                <select name="tutor_id" class="form-select mb-3">
+                    <option value="">— Sin tutor —</option>
+                    {% for d in docentes %}<option value="{{ d.id }}" {% if aula.tutor_id == d.id %}selected{% endif %}>{{ d.usuario.nombre }}</option>{% endfor %}
+                </select>
+                <label class="form-label">Capacidad máxima</label>
+                <input type="number" name="capacidad_maxima" class="form-control mb-3" min="1" value="{{ aula.capacidad_maxima }}">
+                <button class="btn btn-success btn-sm">Guardar</button>
+            </form>
+            {% else %}
+            <p class="mb-0">{{ aula.tutor.usuario.nombre if aula.tutor else 'Sin tutor asignado' }}</p>
+            {% endif %}
+        </div>
+
+        <div class="glass panel">
+            <h4 class="titulo mb-1">Docentes por área</h4>
+            <p class="text-muted small">Solo un docente por área en cada aula. El tutor califica todas las áreas.</p>
+            {% for x in aula.asignaciones %}
+            <div class="d-flex justify-content-between align-items-center small mb-2">
+                <span><strong>{{ x.area.nombre }}</strong> · {{ x.docente.usuario.nombre }}</span>
+                {% if session.rol == 'Administrador' %}<a href="{{ url_for('quitar_asignacion', id=aula.id, asignacion_id=x.id) }}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('¿Quitar esta asignación?')">Quitar</a>{% endif %}
+            </div>
+            {% else %}<p class="text-muted small">Sin docentes de área asignados.</p>{% endfor %}
+
+            {% if session.rol == 'Administrador' %}
+            <hr style="border-color:var(--glass-border)">
+            <form method="POST" class="row g-2"><input type="hidden" name="accion" value="asignar">
+                <div class="col-12"><select name="area_id" class="form-select form-select-sm" required>
+                    <option value="">— Área —</option>{% for ar in areas %}<option value="{{ ar.id }}">{{ ar.nombre }}</option>{% endfor %}</select></div>
+                <div class="col-12"><select name="docente_id" class="form-select form-select-sm" required>
+                    <option value="">— Docente —</option>{% for d in docentes %}<option value="{{ d.id }}">{{ d.usuario.nombre }}</option>{% endfor %}</select></div>
+                <div class="col-12"><button class="btn btn-primary btn-sm">Asignar</button></div>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

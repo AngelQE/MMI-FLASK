@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if estudiante else 'Nuevo' }} estudiante{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">{{ 'Editar' if estudiante else 'Nuevo' }} estudiante</h1>
+<p class="subtitulo-pagina">La fecha de nacimiento define en qué grado puede matricularse (edad al 31 de marzo).</p>
+<div class="glass panel" style="max-width:680px">
+<form method="POST">
+    <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Nombres</label>
+            <input type="text" name="nombre" class="form-control" value="{{ estudiante.nombre if estudiante else '' }}" required></div>
+        <div class="col-md-6"><label class="form-label">Apellidos</label>
+            <input type="text" name="apellido" class="form-control" value="{{ estudiante.apellido if estudiante else '' }}" required></div>
+        <div class="col-md-6"><label class="form-label">Fecha de nacimiento</label>
+            <input type="date" name="fecha_nacimiento" class="form-control" value="{{ estudiante.fecha_nacimiento if estudiante else '' }}" required></div>
+        <div class="col-md-6"><label class="form-label">DNI (opcional)</label>
+            <input type="text" name="dni_documento" class="form-control" maxlength="10" value="{{ estudiante.dni_documento or '' if estudiante else '' }}"></div>
+        <div class="col-12">
+            <div class="form-check mb-1"><input class="form-check-input" type="checkbox" name="tiene_nee" id="nee" {% if estudiante and estudiante.tiene_nee %}checked{% endif %}>
+                <label class="form-check-label" for="nee">Tiene necesidades educativas especiales (NEE)</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" name="salida_autonoma" id="auto" {% if estudiante and estudiante.salida_autonoma %}checked{% endif %}>
+                <label class="form-check-label" for="auto">Salida autónoma autorizada por escrito por el padre (Art. 76)</label></div>
+        </div>
+    </div>
+    <div class="mt-4"><button class="btn btn-success">Guardar</button>
+        <a href="{{ url_for('estudiantes') }}" class="btn btn-outline-secondary">Cancelar</a></div>
+</form></div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{# Insignia de nivel de logro: {{ logro('AD') }} #}
+{% macro logro(v) -%}
+    {%- if v -%}<span class="logro logro-{{ v }}" title="{{ DESC_LOGRO[v] }}">{{ v }}</span>
+    {%- else -%}<span class="logro logro-none">—</span>{%- endif -%}
+{%- endmacro %}
+
+{# Selector de nivel de logro para formularios #}
+{% macro select_logro(name, actual) -%}
+    <select name="{{ name }}" class="form-select form-select-sm logro-select">
+        <option value="">—</option>
+        {% for l in LOGROS %}<option value="{{ l }}" {% if actual == l %}selected{% endif %}>{{ l }}</option>{% endfor %}
+    </select>
+{%- endmacro %}
+
+{% macro estado(valor) -%}<span class="estado estado-{{ valor }}">{{ valor|capitalize }}</span>{%- endmacro %}

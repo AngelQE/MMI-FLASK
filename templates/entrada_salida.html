@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado %}
+{% block title %}Entrada y salida{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Entrada y salida</h1>
+<p class="subtitulo-pagina">Un estudiante solo sale con su padre/tutor, una persona autorizada o salida autónoma autorizada por escrito (Art. 72 y 76)</p>
+
+<form method="POST" action="{{ url_for('registrar_movimiento') }}" class="glass panel mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-lg-3"><label class="form-label">Estudiante</label>
+            <select name="estudiante_id" id="est" class="form-select" required>
+                <option value="">— Selecciona —</option>
+                {% for e in estudiantes %}<option value="{{ e.id }}">{{ e.apellido }}, {{ e.nombre }}</option>{% endfor %}
+            </select></div>
+        <div class="col-lg-2"><label class="form-label">Movimiento</label>
+            <select name="tipo" id="tipo" class="form-select"><option value="entrada">Entrada</option><option value="salida">Salida</option></select></div>
+        <div class="col-lg-5" id="caja-recojo" style="display:none"><label class="form-label">¿Quién lo recoge?</label>
+            <select name="recogido_por" id="recogido" class="form-select"></select></div>
+        <div class="col-lg-2"><button class="btn btn-primary w-100">Registrar</button></div>
+    </div>
+</form>
+
+<div class="glass tabla-wrap"><table class="table table-sm">
+    <thead><tr><th>Fecha y hora</th><th>Estudiante</th><th>Movimiento</th><th>Detalle</th></tr></thead><tbody>
+    {% for m in movimientos %}
+    <tr><td>{{ m.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ m.estudiante.nombre_completo }}</td>
+        <td>{{ estado(m.tipo.value) }}</td><td class="small text-muted">{{ m.detalle or '' }}</td></tr>
+    {% else %}<tr><td colspan="4" class="text-muted text-center py-4">Sin movimientos registrados.</td></tr>{% endfor %}
+    </tbody></table></div>
+{% endblock %}
+{% block scripts %}
+<script>
+const OPCIONES = {{ opciones|tojson }};
+const est = document.getElementById('est'), tipo = document.getElementById('tipo');
+const caja = document.getElementById('caja-recojo'), recogido = document.getElementById('recogido');
+function refrescar() {
+    const esSalida = tipo.value === 'salida';
+    caja.style.display = esSalida ? '' : 'none';
+    recogido.required = esSalida;
+    recogido.innerHTML = '';
+    if (!esSalida) return;
+    const ops = OPCIONES[est.value] || [];
+    if (!est.value) { recogido.innerHTML = '<option value="">Primero elige al estudiante</option>'; return; }
+    recogido.innerHTML = '<option value="">— Selecciona —</option>' + ops.map(o => `<option value="${o.v}">${o.t}</option>`).join('');
+}
+est.addEventListener('change', refrescar); tipo.addEventListener('change', refrescar); refrescar();
+</script>
+{% endblock %}

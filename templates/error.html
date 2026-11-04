@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Acceso denegado{% endblock %}
+{% block content %}
+<div class="glass panel text-center" style="max-width:560px;margin:3rem auto;padding:3rem">
+    <div style="font-size:3.5rem">🚧</div>
+    <h2 class="titulo-pagina mt-2">{{ codigo }}</h2>
+    <p class="text-muted">{{ mensaje }}</p>
+    <a href="{{ url_for('dashboard') if session.usuario_id else url_for('inicio') }}" class="btn btn-primary mt-2">Volver</a>
+</div>
+{% endblock %}

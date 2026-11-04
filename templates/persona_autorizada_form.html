@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Autorizar persona{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Autorizar persona para el recojo</h1>
+<p class="subtitulo-pagina">Si no está en esta lista, el colegio no entregará al estudiante.</p>
+<div class="glass panel" style="max-width:640px"><form method="POST">
+    <label class="form-label">Estudiante</label>
+    <select name="estudiante_id" class="form-select mb-3" required>
+        <option value="">— Selecciona —</option>{% for h in hijos %}<option value="{{ h.id }}">{{ h.nombre_completo }}</option>{% endfor %}
+    </select>
+    <label class="form-label">Nombre completo</label><input type="text" name="nombre_completo" class="form-control mb-3" required>
+    <div class="row g-3 mb-3">
+        <div class="col-md-6"><label class="form-label">DNI</label><input type="text" name="dni" class="form-control" maxlength="10"></div>
+        <div class="col-md-6"><label class="form-label">Teléfono</label><input type="text" name="telefono" class="form-control"></div>
+    </div>
+    <label class="form-label">Relación con el estudiante</label>
+    <input type="text" name="parentesco_o_relacion" class="form-control mb-4" placeholder="Ej. Abuela, Tío, Vecino de confianza">
+    <button class="btn btn-success">Registrar</button><a href="{{ url_for('personas_autorizadas') }}" class="btn btn-outline-secondary">Cancelar</a>
+</form></div>
+{% endblock %}

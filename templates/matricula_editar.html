@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Editar matrícula{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Editar matrícula {{ m.anio_lectivo }}</h1>
+<p class="subtitulo-pagina">{{ m.estudiante.nombre_completo }} · {{ m.aula.grado.nombre }}</p>
+<div class="glass panel" style="max-width:560px"><form method="POST">
+    <label class="form-label">Sección / aula (mismo grado)</label>
+    <select name="aula_id" class="form-select mb-3">
+        {% for a in aulas %}<option value="{{ a.id }}" {% if a.id == m.aula_id %}selected{% endif %}>{{ a.nombre }}</option>{% endfor %}
+    </select>
+    <label class="form-label">Estado</label>
+    <select name="estado" class="form-select mb-2">
+        <option value="activo" {% if m.estado == 'activo' %}selected{% endif %}>Activo</option>
+        <option value="retirado" {% if m.estado == 'retirado' %}selected{% endif %}>Retirado</option>
+    </select>
+    <p class="text-muted small mb-4">Un estudiante retirado deja de aparecer en asistencia y calificaciones, pero conserva su historial.</p>
+    <button class="btn btn-success">Guardar</button>
+    <a href="{{ url_for('matriculas', anio=m.anio_lectivo) }}" class="btn btn-outline-secondary">Cancelar</a>
+</form></div>
+{% endblock %}

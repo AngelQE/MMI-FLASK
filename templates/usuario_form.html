@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if usuario else 'Nuevo' }} usuario{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">{{ 'Editar' if usuario else 'Nuevo' }} usuario</h1>
+<p class="subtitulo-pagina">{% if not usuario %}Al elegir Docente o Padre/Tutor se crea también su ficha.{% endif %}</p>
+<div class="glass panel" style="max-width:640px">
+<form method="POST">
+    <label class="form-label">Nombre completo</label>
+    <input type="text" name="nombre" class="form-control mb-3" value="{{ usuario.nombre if usuario else '' }}" required>
+    <label class="form-label">Correo</label>
+    <input type="email" name="email" class="form-control mb-3" value="{{ usuario.email if usuario else '' }}" required>
+    <label class="form-label">{{ 'Nueva clave (vacío = no cambiar)' if usuario else 'Clave' }}</label>
+    <input type="password" name="password" class="form-control mb-3" {% if not usuario %}required{% endif %}>
+    {% if not usuario %}
+    <label class="form-label">Rol</label>
+    <select name="role_id" class="form-select mb-3" required id="rol">
+        <option value="">— Selecciona —</option>
+        {% for r in roles %}<option value="{{ r.id }}" data-nombre="{{ r.nombre }}">{{ r.nombre }}</option>{% endfor %}
+    </select>
+    <div id="extra-docente" style="display:none"><label class="form-label">Especialidad</label>
+        <input type="text" name="especialidad" class="form-control mb-3" placeholder="Ej. Educación Inicial"></div>
+    <div id="extra-telefono" style="display:none"><label class="form-label">Teléfono</label>
+        <input type="text" name="telefono" class="form-control mb-3"></div>
+    <div id="extra-padre" style="display:none"><label class="form-label">Dirección</label>
+        <input type="text" name="direccion" class="form-control mb-3"></div>
+    {% endif %}
+    <button class="btn btn-success">Guardar</button>
+    <a href="{{ url_for('usuarios') }}" class="btn btn-outline-secondary">Cancelar</a>
+</form></div>
+{% endblock %}
+{% block scripts %}
+<script>
+const rolSel = document.getElementById('rol');
+if (rolSel) rolSel.addEventListener('change', () => {
+    const n = rolSel.selectedOptions[0].dataset.nombre || '';
+    document.getElementById('extra-docente').style.display = n === 'Docente' ? '' : 'none';
+    document.getElementById('extra-padre').style.display = n === 'Padre/Tutor' ? '' : 'none';
+    document.getElementById('extra-telefono').style.display = (n === 'Docente' || n === 'Padre/Tutor') ? '' : 'none';
+});
+</script>
+{% endblock %}

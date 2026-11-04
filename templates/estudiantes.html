@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Estudiantes{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
+    <div><h1 class="titulo-pagina titulo">Estudiantes</h1><p class="subtitulo-pagina mb-0">{{ estudiantes|length }} registrado(s)</p></div>
+    {% if session.rol == 'Administrador' %}<a href="{{ url_for('nuevo_estudiante') }}" class="btn btn-primary">+ Nuevo estudiante</a>{% endif %}
+</div>
+<div class="glass tabla-wrap"><table class="table table-hover">
+    <thead><tr><th>Estudiante</th><th>DNI</th><th>Nacimiento</th><th>Aula {{ ANIO }}</th><th></th></tr></thead>
+    <tbody>
+    {% for e in estudiantes %}
+    {% set m = matricula_actual.get(e.id) %}
+    <tr>
+        <td>{{ e.apellido }}, {{ e.nombre }}
+            {% if e.tiene_nee %}<span class="estado estado-justificado ms-1" title="Necesidades educativas especiales">NEE</span>{% endif %}</td>
+        <td>{{ e.dni_documento or '—' }}</td>
+        <td>{{ e.fecha_nacimiento.strftime('%d/%m/%Y') }}</td>
+        <td>{% if m %}{{ m.aula.nombre }}{% else %}<span class="text-muted">Sin matrícula</span>{% endif %}</td>
+        <td class="text-end">
+            <a href="{{ url_for('detalle_estudiante', id=e.id) }}" class="btn btn-sm btn-info">Ver ficha</a>
+            {% if session.rol == 'Administrador' %}
+            <a href="{{ url_for('editar_estudiante', id=e.id) }}" class="btn btn-sm btn-warning">Editar</a>
+            <a href="{{ url_for('eliminar_estudiante', id=e.id) }}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('¿Eliminar este estudiante y todo su historial?')">Eliminar</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% else %}<tr><td colspan="5" class="text-muted text-center py-4">No hay estudiantes para mostrar.</td></tr>{% endfor %}
+    </tbody></table></div>
+{% endblock %}

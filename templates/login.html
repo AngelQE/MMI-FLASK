@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block content %}
+<div class="glass login-caja mt-4">
+    <div class="text-center mb-3"><span class="logo-burbuja mx-auto" style="width:60px;height:60px;font-size:1.9rem">🧸</span></div>
+    <h2 class="titulo text-center mb-1">Bienvenido/a</h2>
+    <p class="text-muted text-center mb-4">Ingresa con tu correo y clave</p>
+    <form method="POST">
+        <label class="form-label">Correo</label>
+        <input type="email" name="correo" class="form-control mb-3" placeholder="tucorreo@ejemplo.com" required autofocus>
+        <label class="form-label">Clave</label>
+        <input type="password" name="clave" class="form-control mb-4" placeholder="••••••••" required>
+        <button class="btn btn-primary w-100 py-2">Entrar</button>
+    </form>
+</div>
+{% endblock %}

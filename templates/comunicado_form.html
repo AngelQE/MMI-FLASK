@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo comunicado{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Nuevo comunicado</h1><p class="subtitulo-pagina">Lo verán todas las familias y docentes.</p>
+<div class="glass panel" style="max-width:700px"><form method="POST">
+    <label class="form-label">Título</label><input type="text" name="titulo" class="form-control mb-3" required>
+    <label class="form-label">Contenido</label><textarea name="contenido" rows="5" class="form-control mb-3" required></textarea>
+    <button class="btn btn-success">Publicar</button><a href="{{ url_for('comunicados') }}" class="btn btn-outline-secondary">Cancelar</a>
+</form></div>
+{% endblock %}

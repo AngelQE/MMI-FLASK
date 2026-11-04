@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Panel de Dirección{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Hola, {{ session.nombre }} 👋</h1>
+<p class="subtitulo-pagina">Resumen del año escolar {{ ANIO }}</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg"><div class="glass tarjeta-dato" style="--c:var(--coral)"><div class="numero">{{ datos.estudiantes }}</div><div class="etiqueta">Matriculados</div></div></div>
+    <div class="col-6 col-lg"><div class="glass tarjeta-dato" style="--c:var(--cielo)"><div class="numero">{{ datos.docentes }}</div><div class="etiqueta">Docentes</div></div></div>
+    <div class="col-6 col-lg"><div class="glass tarjeta-dato" style="--c:var(--violeta)"><div class="numero">{{ datos.padres }}</div><div class="etiqueta">Familias</div></div></div>
+    <div class="col-6 col-lg"><div class="glass tarjeta-dato" style="--c:var(--menta)"><div class="numero">{{ datos.asistencias_hoy }}</div><div class="etiqueta">Asistencias hoy</div></div></div>
+</div>
+
+{% if datos.pendientes %}
+<div class="alert alert-warning">Tienes <strong>{{ datos.pendientes }}</strong> justificación(es) pendiente(s) de revisar.
+    <a href="{{ url_for('justificaciones') }}" class="alert-link">Revisar ›</a></div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="glass panel">
+            <h4 class="titulo mb-3">Ocupación de aulas</h4>
+            {% for a in aulas %}
+            {% set n = ocupacion[a.id] %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between small">
+                    <span><a href="{{ url_for('detalle_aula', id=a.id) }}">{{ a.nombre }}</a>
+                        <span class="text-muted">· {{ a.tutor.usuario.nombre if a.tutor else 'Sin tutor' }}</span></span>
+                    <span>{{ n }} / {{ a.capacidad_maxima }}</span>
+                </div>
+                <div class="barra {{ 'llena' if n >= a.capacidad_maxima else '' }}"><span style="width: {{ (n / a.capacidad_maxima * 100)|round|int }}%"></span></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="glass panel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="titulo mb-0">Comunicados</h4>
+                <a href="{{ url_for('comunicados') }}" class="small">Ver todos ›</a>
+            </div>
+            {% for c in comunicados %}
+            <div class="mb-3"><strong>{{ c.titulo }}</strong>
+                <div class="text-muted small">{{ c.fecha_publicacion.strftime('%d/%m/%Y') }}</div>
+                <div class="small">{{ c.contenido|truncate(110) }}</div></div>
+            {% else %}<p class="text-muted">Aún no hay comunicados.</p>{% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

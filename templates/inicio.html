@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Bienvenidos{% endblock %}
+{% block navclase %}{% endblock %}
+
+{% block main %}
+<header class="hero">
+    <span class="orbe o1"></span><span class="orbe o2"></span><span class="orbe o3"></span>
+    <span class="estrella" style="top:18%;left:22%;animation-delay:.2s">✦</span>
+    <span class="estrella" style="top:30%;right:18%;animation-delay:1.4s">✧</span>
+    <span class="estrella" style="top:68%;left:12%;animation-delay:2.2s">✦</span>
+    <span class="estrella" style="top:75%;right:26%;animation-delay:.9s">✧</span>
+    <span class="estrella" style="top:12%;right:42%;animation-delay:3s">✦</span>
+
+    <div class="hero-contenido">
+        <span class="hero-etiqueta">Institución Educativa Particular · Huancayo</span>
+        <h1 class="titulo">Mi Mundo<br>Infantil</h1>
+        <p class="lead">Educamos integralmente a niñas y niños de <strong>Inicial</strong> y <strong>Primaria</strong>,
+            desarrollando su potencial académico, personal y social — con las familias siempre cerca.</p>
+        <div class="hero-botones">
+            {% if session.usuario_id %}
+                <a href="{{ url_for('dashboard') }}" class="btn-pill relleno">Ir a mi panel ›</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn-pill relleno">Iniciar sesión ›</a>
+            {% endif %}
+            <a href="#niveles" class="btn-pill">Conoce nuestros niveles</a>
+        </div>
+    </div>
+    <span class="scroll-hint">Desliza ↓</span>
+</header>
+
+<section class="seccion" id="niveles">
+    <div class="container">
+        <h2 class="seccion-titulo titulo">Nuestros niveles</h2>
+        <p class="seccion-sub">Dos niveles de Educación Básica Regular, con horarios y aulas pensados para cada edad.</p>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="glass nivel-card inicial">
+                    <span class="fecha-chip">3 – 5 años</span>
+                    <h3 class="titulo mt-2">Nivel Inicial</h3>
+                    <p class="text-muted">Ciclo II · Aprendizaje a través del juego, la exploración y la expresión.
+                        Evaluación observacional y descriptiva.</p>
+                    {% for g in inicial %}
+                    <div class="horario-fila"><span>{{ g.nombre }}</span>
+                        <span>{{ g.hora_ingreso.strftime('%H:%M') }} – {{ g.hora_salida.strftime('%H:%M') }}</span></div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass nivel-card primaria">
+                    <span class="fecha-chip">6 – 11 años</span>
+                    <h3 class="titulo mt-2">Nivel Primaria</h3>
+                    <p class="text-muted">Ciclos III, IV y V · De 1° a 6° grado. Desarrollo progresivo de competencias
+                        en 8 áreas curriculares.</p>
+                    {% for g in primaria %}
+                    <div class="horario-fila"><span>{{ g.nombre }}</span>
+                        <span>{{ g.hora_ingreso.strftime('%H:%M') }} – {{ g.hora_salida.strftime('%H:%M') }}</span></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="seccion" id="sistema">
+    <div class="container">
+        <h2 class="seccion-titulo titulo">Una escuela conectada con su familia</h2>
+        <p class="seccion-sub">Con el sistema, madres, padres y tutores siguen el día a día de sus hijos.</p>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3"><div class="glass feature">
+                <div class="icono">📅</div><h5 class="titulo">Asistencia al día</h5>
+                <p class="text-muted mb-0">Consulta asistencias, tardanzas y justifica inasistencias dentro del plazo de 5 días hábiles.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="glass feature">
+                <div class="icono">⭐</div><h5 class="titulo">Logros por competencia</h5>
+                <p class="text-muted mb-0">Informe de progreso bimestral con la escala <strong>AD · A · B · C</strong> y conclusiones descriptivas.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="glass feature">
+                <div class="icono">🛡️</div><h5 class="titulo">Recojo seguro</h5>
+                <p class="text-muted mb-0">Solo salen con sus padres o con las personas que tú autorizaste. Todo queda registrado.</p></div></div>
+            <div class="col-md-6 col-lg-3"><div class="glass feature">
+                <div class="icono">📣</div><h5 class="titulo">Comunicados</h5>
+                <p class="text-muted mb-0">Avisos de Dirección y de los docentes, directo en tu panel.</p></div></div>
+        </div>
+    </div>
+</section>
+
+<section class="seccion" id="contacto">
+    <div class="container">
+        <div class="glass panel text-center" style="padding:3rem 1.5rem">
+            <h2 class="seccion-titulo titulo">Visítanos</h2>
+            <p class="mb-1">📍 Prolongación Ica N° 269, Huancayo</p>
+            <p class="mb-1">📞 989 079 891 &nbsp;·&nbsp; ✉️ mimundoinfantilsm@gmail.com</p>
+            <p class="text-muted mb-4">Turno mañana · Gestión privada · UGEL Huancayo</p>
+            {% if not session.usuario_id %}<a href="{{ url_for('login') }}" class="btn-pill relleno">Acceso familias y docentes ›</a>{% endif %}
+        </div>
+    </div>
+</section>
+
+<footer class="pie text-center">© {{ ANIO }} I.E.P. Mi Mundo Infantil · Sistema de control de asistencias y seguridad escolar</footer>
+{% endblock %}

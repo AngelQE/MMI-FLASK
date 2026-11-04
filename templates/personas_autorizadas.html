@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Recojo seguro{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
+    <div><h1 class="titulo-pagina titulo">🛡️ Recojo seguro</h1>
+        <p class="subtitulo-pagina mb-0">Además de los padres/tutores, solo estas personas pueden recoger al estudiante (Art. 72)</p></div>
+    <a href="{{ url_for('nueva_persona_autorizada') }}" class="btn btn-primary">+ Autorizar persona</a>
+</div>
+<div class="glass tabla-wrap"><table class="table table-hover">
+    <thead><tr><th>Estudiante</th><th>Persona autorizada</th><th>Relación</th><th>DNI</th><th>Teléfono</th><th></th></tr></thead><tbody>
+    {% for p in personas %}
+    <tr><td>{{ p.estudiante.nombre_completo }}</td><td>{{ p.nombre_completo }}</td><td>{{ p.parentesco_o_relacion or '—' }}</td>
+        <td>{{ p.dni or '—' }}</td><td>{{ p.telefono or '—' }}</td>
+        <td class="text-end"><a href="{{ url_for('eliminar_persona_autorizada', id=p.id) }}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('¿Quitar esta autorización?')">Quitar</a></td></tr>
+    {% else %}<tr><td colspan="6" class="text-muted text-center py-4">Aún no hay personas autorizadas registradas.</td></tr>{% endfor %}
+    </tbody></table></div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado %}
+{% block title %}Matrículas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
+    <div><h1 class="titulo-pagina titulo">Matrículas {{ anio_sel }}</h1><p class="subtitulo-pagina mb-0">{{ matriculas|length }} matrícula(s) registrada(s)</p></div>
+    <div class="d-flex gap-2">
+        <form method="GET" class="d-flex gap-2"><input type="number" name="anio" value="{{ anio_sel }}" class="form-control" style="width:110px"><button class="btn btn-outline-secondary">Ver</button></form>
+        <a href="{{ url_for('nueva_matricula') }}" class="btn btn-primary">+ Nueva matrícula</a>
+    </div>
+</div>
+<div class="glass tabla-wrap"><table class="table table-hover">
+    <thead><tr><th>Estudiante</th><th>Aula</th><th>Edad al 31/03</th><th>Estado</th><th></th></tr></thead><tbody>
+    {% for m in matriculas %}
+    <tr><td>{{ m.estudiante.apellido }}, {{ m.estudiante.nombre }}</td><td>{{ m.aula.nombre }}</td>
+        <td>{{ m.estudiante.edad_al_31_marzo(m.anio_lectivo) }} años</td><td>{{ estado(m.estado) }}</td>
+        <td class="text-end">
+            <a href="{{ url_for('editar_matricula', id=m.id) }}" class="btn btn-sm btn-warning">Editar</a>
+            <a href="{{ url_for('eliminar_matricula', id=m.id) }}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('¿Eliminar esta matrícula? Se borrarán sus calificaciones.')">Eliminar</a></td></tr>
+    {% else %}<tr><td colspan="5" class="text-muted text-center py-4">No hay matrículas en {{ anio_sel }}.</td></tr>{% endfor %}
+    </tbody></table></div>
+{% endblock %}

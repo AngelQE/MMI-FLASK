@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import logro, estado with context %}
+{% block title %}{{ est.nombre_completo }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="titulo-pagina titulo">{{ est.nombre_completo }}</h1>
+        <p class="subtitulo-pagina mb-0">
+            {% if matricula %}{{ matricula.aula.nombre }} · {{ matricula.aula.grado.nivel.value|capitalize }} · {{ matricula.anio_lectivo }} · {{ edad }} años al 31/03{% else %}Sin matrícula{% endif %}
+            · DNI {{ est.dni_documento or '—' }}
+        </p>
+    </div>
+    {% if session.rol == 'Administrador' %}
+    <div class="d-flex gap-2"><a href="{{ url_for('editar_estudiante', id=est.id) }}" class="btn btn-sm btn-warning">Editar</a>
+        <a href="{{ url_for('asignar_padre', id=est.id) }}" class="btn btn-sm btn-outline-primary">Vincular padre/tutor</a></div>
+    {% endif %}
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4"><div class="glass panel h-100">
+        <h5 class="titulo">Familia</h5>
+        {% for r in est.padres %}<div class="small mb-1">👤 {{ r.padre.usuario.nombre if r.padre.usuario else 'Padre #' ~ r.padre_id }} <span class="text-muted">· {{ r.parentesco or 'Padre/Tutor' }} · {{ r.padre.telefono }}</span></div>
+        {% else %}<p class="text-muted small">Sin padre/tutor vinculado.</p>{% endfor %}
+        <hr style="border-color:var(--glass-border)">
+        <h5 class="titulo">Asistencia {{ ANIO }}</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <span class="estado estado-presente">{{ resumen.presente }} presente</span>
+            <span class="estado estado-ausente">{{ resumen.ausente }} ausente</span>
+            <span class="estado estado-tardanza">{{ resumen.tardanza }} tardanza</span>
+            <span class="estado estado-justificado">{{ resumen.justificado }} justificado</span>
+        </div>
+    </div></div>
+    <div class="col-lg-8"><div class="glass panel h-100">
+        <h5 class="titulo">Últimos registros de asistencia</h5>
+        <div class="tabla-wrap"><table class="table table-sm">
+            <thead><tr><th>Fecha</th><th>Estado</th><th></th></tr></thead><tbody>
+            {% for a in asistencias %}
+            <tr><td>{{ a.fecha.strftime('%A %d/%m/%Y')|replace('Monday','Lunes')|replace('Tuesday','Martes')|replace('Wednesday','Miércoles')|replace('Thursday','Jueves')|replace('Friday','Viernes')|replace('Saturday','Sábado')|replace('Sunday','Domingo') }}</td>
+                <td>{{ estado(a.estado.value) }}</td>
+                <td class="text-end">{% if a.estado.value in ['ausente', 'tardanza'] and not a.justificaciones %}
+                    <a href="{{ url_for('nueva_justificacion', asistencia_id=a.id) }}" class="btn btn-sm btn-outline-primary">Justificar</a>
+                    {% elif a.justificaciones %}<span class="small text-muted">Justificación: {{ a.justificaciones[0].estado.value }}</span>{% endif %}</td></tr>
+            {% else %}<tr><td colspan="3" class="text-muted">Sin registros.</td></tr>{% endfor %}
+            </tbody></table></div>
+    </div></div>
+</div>
+
+{% if boletin %}
+<h2 class="titulo mb-1">Informe de progreso {{ matricula.anio_lectivo }}</h2>
+<p class="text-muted small mb-3">Escala: <span class="logro logro-AD">AD</span> Logro destacado · <span class="logro logro-A">A</span> Logro esperado ·
+    <span class="logro logro-B">B</span> En proceso · <span class="logro logro-C">C</span> En inicio</p>
+
+{% for area in boletin.areas %}
+<div class="glass panel mb-3">
+    <h5 class="titulo mb-3">{{ area.nombre }}</h5>
+    <div class="tabla-wrap"><table class="table table-sm tabla-informe">
+        <thead><tr><th>Competencia</th>{% for b in [1,2,3,4] %}<th class="text-center">Bim. {{ b }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for c in area.competencias %}
+        <tr><td class="small">{{ c.nombre }}</td>
+            {% for b in [1,2,3,4] %}<td class="text-center">{{ logro(boletin.logros.get((c.id, b))) }}</td>{% endfor %}</tr>
+        {% endfor %}
+        </tbody></table></div>
+    {% for b in [1,2,3,4] %}{% set t = boletin.conclusiones.get((area.id, b)) %}
+        {% if t %}<div class="small mt-2"><strong>Bimestre {{ b }}:</strong> <span class="text-muted">{{ t }}</span></div>{% endif %}
+    {% endfor %}
+</div>
+{% endfor %}
+
+<div class="glass panel mb-4">
+    <h5 class="titulo mb-3">Conducta</h5>
+    <div class="tabla-wrap"><table class="table table-sm tabla-informe">
+        <thead><tr><th>Rubro</th>{% for b in [1,2,3,4] %}<th class="text-center">Bim. {{ b }}</th>{% endfor %}</tr></thead><tbody>
+        {% for rubro, campo in [('Comportamiento', 'comportamiento'), ('Puntualidad', 'puntualidad'), ('Presentación personal', 'presentacion_personal')] %}
+        <tr><td>{{ rubro }}</td>
+            {% for b in [1,2,3,4] %}{% set c = boletin.conducta.get(b) %}<td class="text-center">{{ logro(c[campo].value if c else None) }}</td>{% endfor %}</tr>
+        {% endfor %}
+        </tbody></table></div>
+</div>
+{% endif %}
+
+<div class="glass panel">
+    <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="titulo mb-0">🛡️ Personas autorizadas a recogerlo/a</h5>
+        {% if session.rol in ['Administrador', 'Padre/Tutor'] %}<a href="{{ url_for('nueva_persona_autorizada') }}" class="btn btn-sm btn-outline-primary">+ Agregar</a>{% endif %}</div>
+    {% if est.salida_autonoma %}<p class="small"><span class="estado estado-justificado">Salida autónoma autorizada</span></p>{% endif %}
+    {% for p in est.personas_autorizadas %}
+        <div class="small mb-1">{{ p.nombre_completo }} <span class="text-muted">· {{ p.parentesco_o_relacion or '—' }} · DNI {{ p.dni or '—' }} · {{ p.telefono or '—' }}</span></div>
+    {% else %}<p class="text-muted small mb-0">Sin personas autorizadas registradas (solo sus padres/tutores pueden recogerlo).</p>{% endfor %}
+</div>
+{% endblock %}

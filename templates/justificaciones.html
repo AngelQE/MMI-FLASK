@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import estado %}
+{% block title %}Justificaciones{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Justificaciones</h1>
+<p class="subtitulo-pagina">Las familias tienen 5 días hábiles para justificar una inasistencia o tardanza (Art. 163)</p>
+<div class="glass tabla-wrap"><table class="table table-hover">
+    <thead><tr><th>Estudiante</th><th>Fecha</th><th>Falta</th><th>Motivo</th><th>Estado</th><th></th></tr></thead><tbody>
+    {% for j in justificaciones %}
+    <tr><td>{{ j.asistencia.estudiante.nombre_completo }}</td>
+        <td>{{ j.asistencia.fecha.strftime('%d/%m/%Y') }}</td>
+        <td>{{ estado(j.asistencia.estado.value) }}</td>
+        <td class="small">{{ j.motivo }}</td>
+        <td>{{ estado(j.estado.value) }}</td>
+        <td class="text-end">{% if j.estado.value == 'pendiente' %}
+            <a href="{{ url_for('resolver_justificacion', id=j.id, accion='aprobar') }}" class="btn btn-sm btn-success">Aprobar</a>
+            <a href="{{ url_for('resolver_justificacion', id=j.id, accion='rechazar') }}" class="btn btn-sm btn-outline-secondary">Rechazar</a>{% endif %}</td></tr>
+    {% else %}<tr><td colspan="6" class="text-muted text-center py-4">No hay justificaciones.</td></tr>{% endfor %}
+    </tbody></table></div>
+{% endblock %}

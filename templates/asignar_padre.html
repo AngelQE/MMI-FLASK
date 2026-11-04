@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Vincular padre/tutor{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Vincular padre/tutor</h1>
+<p class="subtitulo-pagina">Estudiante: {{ est.nombre_completo }}</p>
+<div class="glass panel" style="max-width:560px"><form method="POST">
+    <label class="form-label">Padre / tutor</label>
+    <select name="padre_id" class="form-select mb-3" required>
+        <option value="">— Selecciona —</option>
+        {% for p in padres %}<option value="{{ p.id }}">{{ p.usuario.nombre if p.usuario else 'Padre #' ~ p.id }}</option>{% endfor %}
+    </select>
+    <label class="form-label">Parentesco</label>
+    <input type="text" name="parentesco" class="form-control mb-4" placeholder="PADRE / MADRE / TUTOR">
+    <button class="btn btn-success">Vincular</button>
+    <a href="{{ url_for('detalle_estudiante', id=est.id) }}" class="btn btn-outline-secondary">Cancelar</a>
+</form></div>
+{% endblock %}

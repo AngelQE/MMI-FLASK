@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import select_logro with context %}
+{% block title %}Conducta{% endblock %}
+{% block content %}
+<h1 class="titulo-pagina titulo">Evaluación de la conducta</h1>
+<p class="subtitulo-pagina">La realiza el tutor cada bimestre en tres rubros (Art. 135-136): <strong>AD</strong> destacado · <strong>A</strong> bueno · <strong>B</strong> en proceso · <strong>C</strong> en inicio</p>
+
+<form method="GET" class="glass panel mb-4"><div class="row g-3 align-items-end">
+    <div class="col-md-6"><label class="form-label">Aula (como tutor/a)</label>
+        <select name="aula_id" class="form-select" onchange="this.form.submit()">
+            <option value="">— Selecciona —</option>
+            {% for a in aulas %}<option value="{{ a.id }}" {% if aula and aula.id == a.id %}selected{% endif %}>{{ a.nombre }}</option>{% endfor %}
+        </select></div>
+    <div class="col-md-4"><label class="form-label">Bimestre</label>
+        <select name="bimestre" class="form-select" onchange="this.form.submit()">
+            {% for b in [1,2,3,4] %}<option value="{{ b }}" {% if bimestre == b %}selected{% endif %}>Bimestre {{ b }}</option>{% endfor %}
+        </select></div>
+</div>{% if not aulas %}<p class="text-muted small mt-3 mb-0">No eres tutor/a de ningún aula.</p>{% endif %}</form>
+
+{% if aula %}
+<form method="POST"><input type="hidden" name="aula_id" value="{{ aula.id }}"><input type="hidden" name="bimestre" value="{{ bimestre }}">
+<div class="glass tabla-wrap mb-3"><table class="table">
+    <thead><tr><th>Estudiante</th><th class="text-center">Comportamiento</th><th class="text-center">Puntualidad</th><th class="text-center">Presentación personal</th></tr></thead><tbody>
+    {% for m in matriculados %}{% set c = actuales.get(m.id) %}
+    <tr><td>{{ m.estudiante.apellido }}, {{ m.estudiante.nombre }}</td>
+        <td style="width:150px">{{ select_logro('comp_%d'|format(m.id), c.comportamiento.value if c else None) }}</td>
+        <td style="width:150px">{{ select_logro('punt_%d'|format(m.id), c.puntualidad.value if c else None) }}</td>
+        <td style="width:150px">{{ select_logro('pres_%d'|format(m.id), c.presentacion_personal.value if c else None) }}</td></tr>
+    {% else %}<tr><td colspan="4" class="text-muted text-center py-4">Sin estudiantes matriculados.</td></tr>{% endfor %}
+    </tbody></table></div>
+{% if matriculados %}<p class="text-muted small">Se guardan solo las filas con los tres rubros completos.</p><button class="btn btn-success px-4">Guardar conducta</button>{% endif %}
+</form>
+{% endif %}
+{% endblock %}
